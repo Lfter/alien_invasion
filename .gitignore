@@ -1,3 +1,4 @@
 __pycache__/
 *.pyc
 high_score.json
+.DS_Store
