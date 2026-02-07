@@ -290,6 +290,6 @@ class AlienInvasion:
             pass
 
 if __name__ == '__main__':
-    # 创建游戏实例并运行游戏
+    # 创建游戏实例并运行游戏1.0
     ai = AlienInvasion()
     ai.run_game()
