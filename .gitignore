@@ -1,2 +1,13 @@
-__pycache__/
-.DS_Store
+# .gitignore 文件内容
+__pycache__/      # Python 缓存文件
+*.pyc            # 编译的 Python 文件
+*.pyo
+*.pyd
+.Python
+*.log           # 日志文件
+*.db            # 数据库文件
+*.sqlite3
+.DS_Store       # macOS 系统文件
+high_score.json # 你的游戏数据（可选，如果不想提交）
+venv/           # Python 虚拟环境
+env/

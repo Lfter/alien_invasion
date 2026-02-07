@@ -36,7 +36,6 @@ class AlienInvasion:
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
 
-        
         # 游戏启动在一开始处于非活动状态
         self.game_active = False
 
