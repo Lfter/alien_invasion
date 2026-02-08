@@ -74,9 +74,7 @@ class AlienInvasion:
         if button_clicked and not self.game_active:
             #重制游戏的统计信息
             self.stats.reset_stats()
-            self.sb.prep_score()
-            self.sb.prep_level()
-            self.sb.prep_ships()
+            self.sb.prep_images()
 
             #还原游戏设置
             self.settings.initialize_dynamic_settings()
@@ -88,8 +86,7 @@ class AlienInvasion:
         self.game_active = True
 
         #清空外星人列表和子弹列表
-        self.bullets.empty()
-        self.aliens.empty()
+        self._empty_aliens_bullets()
 
         #创建一个新的外星舰队，并将飞船放在屏幕底部的中央
         self._create_fleet()
@@ -158,11 +155,15 @@ class AlienInvasion:
 
         if not self.aliens:
             # 删除所有现有的子弹并创建一个新的外星舰队
-            self.bullets.empty()
-            self._create_fleet()
-            self.settings.increase_speed()
-            self.stats.level += 1
-            self.sb.prep_level()
+            self._start_new_level()
+
+    def _start_new_level(self):
+        """删除所有现有的子弹并创建一个新的外星舰队并提高等级"""
+        self.bullets.empty()
+        self._create_fleet()
+        self.settings.increase_speed()
+        self.stats.level += 1
+        self.sb.prep_level()
 
     def _create_fleet(self):
         """创建一个外星舰队"""
@@ -214,24 +215,27 @@ class AlienInvasion:
             self.sb.prep_ships()
             
             # 清空外星人列表和子弹的列表
-            self.bullets.empty()
-            self.aliens.empty()
+            self._empty_aliens_bullets()
             
             # 创建一个新的外星舰队，并将飞船放到屏幕底部的中央
             self._create_fleet()
             self.ship.center_ship()
             
             # 重置飞船的移动标志
-            self.ship.moving_right = False
-            self.ship.moving_left = False
-            self.ship.moving_up = False
-            self.ship.moving_down = False
+            self._reset_ship_flag()
             
             # 暂停
             sleep(0.3)
         else:
             self.game_active = False
             pygame.mouse.set_visible(True)
+
+    def _reset_ship_flag(self):
+        """重置飞船的移动标志"""
+        self.ship.moving_right = False
+        self.ship.moving_left = False
+        self.ship.moving_up = False
+        self.ship.moving_down = False
 
     def _check_aliens_bottom(self):
         """检查是否有外星人到达了屏幕的下边缘"""
@@ -288,6 +292,11 @@ class AlienInvasion:
                 json.dump(self.stats.high_score, f)
         except IOError:
             pass
+
+    def _empty_aliens_bullets(self):
+        """清空外星人列表和子弹列表"""
+        self.bullets.empty()
+        self.aliens.empty()
 
 if __name__ == '__main__':
     # 创建游戏实例并运行游戏1.0

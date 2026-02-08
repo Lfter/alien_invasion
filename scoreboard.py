@@ -17,13 +17,16 @@ class Scoreboard:
         #显示得分用的字体参数
         self.text_color = (30,30,30)
         self.font = pygame.font.SysFont(None,48)
+        self.prep_images()
 
+    def prep_images(self):
         #准备初始得分图像
         self.prep_score()
         #准备初始最高分图像
         self.prep_high_score()
         self.prep_level()
         self.prep_ships()
+
 
     def prep_score(self):
         """将得分渲染成图像"""
