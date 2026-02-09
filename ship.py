@@ -34,16 +34,28 @@ class Ship(Sprite):
         if self.moving_right and self.rect.right < self.screen_rect.right:
             self.x += self.settings.ship_speed
             self._ship_speed()
+            if not self.moving_right:
+                self.x += self.settings.ship_speed
+                self._ship_speed_slow()
         if self.moving_left and self.rect.left > 0:
             self.x -= self.settings.ship_speed
             self._ship_speed()
+            if not self.moving_left:
+                self.x -= self.settings.ship_speed
+                self._ship_speed_slow()
         if self.moving_up and self.rect.top > 0:
             self.y -= self.settings.ship_speed
             self._ship_speed()
+            if not self.moving_up:
+                self.y -= self.settings.ship_speed
+                self._ship_speed_slow()
         if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
             self.y += self.settings.ship_speed
             self._ship_speed()
-        
+            if not self.moving_down:
+                self.y += self.settings.ship_speed
+                self._ship_speed_slow()
+
         # 根据self.x和self.y更新rect对象
         self.rect.x = int(self.x)
         self.rect.y = int(self.y)
@@ -52,6 +64,11 @@ class Ship(Sprite):
         """更新飞船的速度"""
         if self.settings.ship_speed <= self.settings.ship_speed_max:
             self.settings.ship_speed += self.settings.ship_acceleration
+
+    def _ship_speed_slow(self):
+        """减慢飞船的速度"""
+        if self.settings.ship_speed > 0:
+            self.settings.ship_speed -= self.settings.ship_obstruction
 
     def blitme(self):
         """在指定位置绘制飞船"""

@@ -9,8 +9,9 @@ class Settings:
         
         # 飞船设置
         self.ship_acceleration = 0.5
-        self.ship_speed_max = 2
-        self.ship_speed = 1.5
+        self.ship_obstruction = 0.05
+        self.ship_speed_max = 3
+        self.ship_speed = 0
         self.ship_limit = 3
         
         # 子弹设置
