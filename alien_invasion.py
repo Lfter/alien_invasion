@@ -158,8 +158,10 @@ class AlienInvasion:
                 self.sound_manager.play_sound('explosion')
 
         if not self.aliens:
-            # 删除所有现有的子弹并创建一个新的外星舰队
+            # 删除所有现有的子弹并创建一个新的外星舰队并将飞船放回屏幕底部的中央
             self._start_new_level()
+            self._reset_ship_flag()
+            self.ship.center_ship()
 
     def _start_new_level(self):
         """删除所有现有的子弹并创建一个新的外星舰队并提高等级"""

@@ -33,16 +33,25 @@ class Ship(Sprite):
         # 更新飞船的属性x和y的值
         if self.moving_right and self.rect.right < self.screen_rect.right:
             self.x += self.settings.ship_speed
+            self._ship_speed()
         if self.moving_left and self.rect.left > 0:
             self.x -= self.settings.ship_speed
+            self._ship_speed()
         if self.moving_up and self.rect.top > 0:
             self.y -= self.settings.ship_speed
+            self._ship_speed()
         if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
             self.y += self.settings.ship_speed
+            self._ship_speed()
         
         # 根据self.x和self.y更新rect对象
         self.rect.x = int(self.x)
         self.rect.y = int(self.y)
+
+    def _ship_speed(self):
+        """更新飞船的速度"""
+        if self.settings.ship_speed <= self.settings.ship_speed_max:
+            self.settings.ship_speed += self.settings.ship_acceleration
 
     def blitme(self):
         """在指定位置绘制飞船"""

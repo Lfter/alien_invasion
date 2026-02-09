@@ -8,6 +8,8 @@ class Settings:
         self.bg_color = (230, 230, 230)
         
         # 飞船设置
+        self.ship_acceleration = 0.5
+        self.ship_speed_max = 2
         self.ship_speed = 1.5
         self.ship_limit = 3
         
@@ -45,9 +47,11 @@ class Settings:
 
     def increase_speed(self):
         """提高速度设置的值"""
-        self.ship_speed = self.speedup_scale
-        self.bullet_speed = self.speedup_scale
-        self.alien_speed = self.speedup_scale
+        self.ship_speed *= self.speedup_scale
+        self.bullet_speed *= self.speedup_scale
+        self.alien_speed *= self.speedup_scale
+        self.ship_acceleration = self.speedup_scale
+        self.ship_speed_max *= self.speedup_scale
 
         self.alien_points = int(self.alien_points * self.score_scale)
 
