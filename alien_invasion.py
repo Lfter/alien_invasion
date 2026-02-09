@@ -10,6 +10,7 @@ from button import Button
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from soundsmanager import SoundManager
 
 class AlienInvasion:
     """管理游戏资源和行为的类"""
@@ -17,6 +18,7 @@ class AlienInvasion:
     def __init__(self):
         """初始化游戏并创建游戏资源"""
         pygame.init()
+        self.sound_manager = SoundManager()
         self.clock = pygame.time.Clock()
         self.settings = Settings()
         self.screen = pygame.display.set_mode(
@@ -35,14 +37,14 @@ class AlienInvasion:
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
+        # 开始游戏时播放背景音乐
+        self.sound_manager.play_music(loops=-1)
 
         # 游戏启动在一开始处于非活动状态
         self.game_active = False
 
         #创建Play按钮
         self.play_button = Button(self,"Play")
-
-
 
     def run_game(self):
         """开始游戏的主循环"""
@@ -128,6 +130,7 @@ class AlienInvasion:
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+            self.sound_manager.play_sound('shoot')
 
     def _update_bullets(self):
         """更新子弹的位置并删除已消失的子弹"""
@@ -152,6 +155,7 @@ class AlienInvasion:
                 self.stats.score += self.settings.alien_points *len(aliens)
                 self.sb.prep_score()
                 self.sb.check_high_score()
+                self.sound_manager.play_sound('explosion')
 
         if not self.aliens:
             # 删除所有现有的子弹并创建一个新的外星舰队
@@ -223,12 +227,23 @@ class AlienInvasion:
             
             # 重置飞船的移动标志
             self._reset_ship_flag()
+
+            #播放飞船被撞到的音效
+            self.sound_manager.play_sound('hit')
             
             # 暂停
             sleep(0.3)
         else:
             self.game_active = False
             pygame.mouse.set_visible(True)
+            self.game_over()
+
+    def game_over(self):
+        """游戏结束"""
+        # 播放游戏结束音效
+        self.sound_manager.play_sound('game_over')
+        # 停止背景音乐
+        self.sound_manager.stop_music()
 
     def _reset_ship_flag(self):
         """重置飞船的移动标志"""
