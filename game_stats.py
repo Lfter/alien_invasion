@@ -6,6 +6,7 @@ class GameStats:
         """初始化统计信息"""
         self.settings = ai_game.settings
         self.reset_stats()
+        self.ai_game = ai_game
         #在任何情况下都不应重置最高分
         self.high_score = 0
 
@@ -13,4 +14,4 @@ class GameStats:
         """初始化在游戏运行期间可能发生变化的统计信息"""
         self.ships_left = self.settings.ship_limit
         self.score = 0
-        self.level =1
+        self.level = 1

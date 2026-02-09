@@ -1,3 +1,6 @@
+import os
+import sys
+
 class Settings:
     """储存游戏《外星人入侵》中所有设置的类"""
 
@@ -32,7 +35,52 @@ class Settings:
 
         #外星人分数的提高速度
         self.score_scale = 1.5
+
+        # ============ 智能查找资源路径 ============
+        self.base_path = self._find_resource_path()
+        
+        # 初始化动态设置
         self.initialize_dynamic_settings()
+    
+    def _find_resource_path(self):
+        """智能查找资源文件所在的目录"""
+        possible_paths = [
+            # 打包后的路径
+            getattr(sys, '_MEIPASS', None),
+            
+            # 开发环境的各种可能路径
+            os.path.dirname(os.path.abspath(__file__)),  # settings.py所在目录
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'),  # 上级目录
+            '/Users/ltzz/Desktop/py/alien_invasion',  # 绝对路径
+            os.path.join(os.path.expanduser('~'), 'Desktop', 'py', 'alien_invasion'),
+        ]
+        
+        # 添加当前工作目录
+        possible_paths.append(os.getcwd())
+        
+        for path in possible_paths:
+            if path and os.path.exists(path):
+                # 检查是否有images和sounds文件夹
+                has_images = os.path.exists(os.path.join(path, 'images', 'ship.bmp'))
+                has_sounds = os.path.exists(os.path.join(path, 'sounds', 'shoot.wav'))
+                
+                if has_images or has_sounds:
+                    return path
+        
+        # 如果没有找到，返回当前文件所在目录
+        fallback_path = os.path.dirname(os.path.abspath(__file__))
+        return fallback_path
+    
+    def get_resource_path(self, relative_path):
+        """获取资源文件的完整路径"""
+        full_path = os.path.join(self.base_path, relative_path)
+        if not os.path.exists(full_path):
+            # 尝试在上级目录查找
+            parent_dir = os.path.dirname(self.base_path)
+            alt_path = os.path.join(parent_dir, relative_path)
+            if os.path.exists(alt_path):
+                return alt_path
+        return full_path
 
     def initialize_dynamic_settings(self):
         """初始化随着游戏进行而变化的设置"""
@@ -55,5 +103,3 @@ class Settings:
         self.ship_speed_max *= self.speedup_scale
 
         self.alien_points = int(self.alien_points * self.score_scale)
-
-        

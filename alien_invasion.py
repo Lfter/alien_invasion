@@ -1,4 +1,5 @@
 import sys
+import os
 from time import sleep
 from pathlib import Path
 import json
@@ -18,15 +19,25 @@ class AlienInvasion:
     def __init__(self):
         """初始化游戏并创建游戏资源"""
         pygame.init()
-        self.sound_manager = SoundManager()
         self.clock = pygame.time.Clock()
         self.settings = Settings()
+        pygame.display.set_caption("Alien Invasion")
         self.screen = pygame.display.set_mode(
             (self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption("Alien Invasion")
+        
+        # 初始化声音管理器并加载音效
+        self.sound_manager = SoundManager()
+        self._load_sounds()
+
+        # 创建游戏数据目录和最高分文件路径
+        self._setup_data_directory()
 
         #创建储存游戏统计信息的实例，并创建记分牌
-        self.high_score_json = Path("alien_invasion/high_score.json")
+        self.stats = GameStats(self)
+
+        #读取最高分json文件位置，读取最高分文档
+        self._load_high_score()
         self.stats = GameStats(self)
 
         #读取最高分json文件位置，读取最高分文档
@@ -37,14 +48,52 @@ class AlienInvasion:
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
-        # 开始游戏时播放背景音乐
-        self.sound_manager.play_music(loops=-1)
 
         # 游戏启动在一开始处于非活动状态
         self.game_active = False
 
         #创建Play按钮
         self.play_button = Button(self,"Play")
+
+    def _setup_data_directory(self):
+        """设置游戏数据目录"""
+        # 确定高分文件的保存位置
+        if getattr(sys, 'frozen', False):
+            # 打包环境：将高分文件保存在可执行文件所在目录
+            if hasattr(sys, '_MEIPASS'):
+                # 获取exe所在目录
+                exe_dir = os.path.dirname(sys.executable)
+                data_dir = exe_dir
+            else:
+                # 使用当前工作目录
+                data_dir = os.getcwd()
+        else:
+            # 开发环境：保存在项目目录下
+            data_dir = self.settings.base_path
+        
+        # 确保目录存在
+        os.makedirs(data_dir, exist_ok=True)
+        
+        # 设置高分文件路径
+        self.high_score_json = Path(data_dir) / "high_score.json"
+
+    def _load_sounds(self):
+        """加载所有音效"""
+        # 背景音乐
+        bg_music_path = self.settings.get_resource_path('sounds/background_music.mp3')
+        
+        # 音效
+        shoot_path = self.settings.get_resource_path('sounds/shoot.wav')
+        explosion_path = self.settings.get_resource_path('sounds/explosion.wav')
+        hit_path = self.settings.get_resource_path('sounds/hit.wav')
+        game_over_path = self.settings.get_resource_path('sounds/game_over.wav')
+        
+        # 加载音效
+        self.sound_manager.load_sound('shoot', shoot_path)
+        self.sound_manager.load_sound('explosion', explosion_path)
+        self.sound_manager.load_sound('hit', hit_path)
+        self.sound_manager.load_sound('game_over', game_over_path)
+        
 
     def run_game(self):
         """开始游戏的主循环"""
@@ -81,6 +130,7 @@ class AlienInvasion:
             #还原游戏设置
             self.settings.initialize_dynamic_settings()
             self._start_game()
+            self.sound_manager.play_music(self.settings.get_resource_path('sounds/background_music.mp3'), loops=-1)
             
     def _start_game(self):
         #重置游戏的统计信息
@@ -113,6 +163,7 @@ class AlienInvasion:
             self._start_game()
         elif event.key == pygame.K_q:
             sys.exit()
+            self._save_high_score()
 
     def _check_keyup_events(self, event):
         """响应释放"""
@@ -299,7 +350,9 @@ class AlienInvasion:
             if self.high_score_json.exists():
                 with open(self.high_score_json, 'r') as f:
                     self.stats.high_score = json.load(f)
-        except (json.JSONDecodeError, IOError):
+            else:
+                self.stats.high_score = 0
+        except (json.JSONDecodeError, IOError) as e:
             self.stats.high_score = 0
 
     def _save_high_score(self):

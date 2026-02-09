@@ -12,7 +12,9 @@ class Ship(Sprite):
         self.screen_rect = ai_game.screen.get_rect()
         
         # 加载飞船图形并获取其外接矩形
-        self.image = pygame.image.load('alien_invasion/images/ship.bmp')
+        # 使用settings中的get_resource_path方法
+        image_path = self.settings.get_resource_path('images/ship.bmp')
+        self.image = pygame.image.load(image_path)
         self.rect = self.image.get_rect()
 
         # 每艘新飞船都放在屏幕底部的中央
